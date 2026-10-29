@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: PHP ${{ matrix.php }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Code style
+        run: composer lint
+
+      # Includes the committed drupal:contract snapshots (tests/Contract/snapshots).
+      - name: Tests
+        run: composer test
+
+  docs:
+    runs-on: ubuntu-latest
+    name: Docs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: docs/.nvmrc
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      # ignoreDeadLinks is false, so a broken link fails the build.
+      - name: Build
+        run: |
+          npm --prefix docs ci
+          npm --prefix docs run docs:build
+
+      - name: Committed build is current
+        run: git diff --exit-code --stat public/ && test -z "$(git status --porcelain public/)"

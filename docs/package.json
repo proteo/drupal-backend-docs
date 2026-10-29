@@ -1,0 +1,18 @@
+{
+  "name": "drupal-backend-docs",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev .",
+    "docs:build": "vitepress build ."
+  },
+  "devDependencies": {
+    "mermaid": "^11.17.2",
+    "vitepress": "~1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
+}

@@ -1,0 +1,33 @@
+# .github/workflows/drupal-drift.yml
+name: Drupal drift
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      # `shell: bash` turns on pipefail; without it `| tee` hides the exit code of drupal:validate.
+      - shell: bash
+        run: php artisan drupal:validate --json | tee drupal-validate.json
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          DRUPAL_BASE_URL: ${{ vars.DRUPAL_BASE_URL }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drupal-validate
+          path: drupal-validate.json

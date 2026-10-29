@@ -1,0 +1,17 @@
+# .github/workflows/deploy.yml (excerpt): run after the new release is live.
+- name: Flush the content cache
+  run: php artisan drupal:flush
+
+# `shell: bash` turns on pipefail; without it `| tee` hides the exit code of drupal:validate.
+- name: Check the Drupal backend
+  shell: bash
+  run: php artisan drupal:validate --json | tee drupal-validate.json
+
+- name: Contract is committed
+  run: php artisan drupal:contract | diff -u drupal-contract.md -
+
+- uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: drupal-validate
+    path: drupal-validate.json

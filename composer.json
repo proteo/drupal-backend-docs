@@ -1,0 +1,46 @@
+{
+    "name": "proteo/drupal-backend-docs",
+    "description": "Developer documentation for proteo/drupal-backend, served at /backend-docs outside production.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "illuminate/support": "^13.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.32",
+        "orchestra/testbench": "^11.3",
+        "phpunit/phpunit": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Proteo\\DrupalBackendDocs\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Proteo\\DrupalBackendDocs\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Proteo\\DrupalBackendDocs\\DrupalBackendDocsServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "lint": "vendor/bin/pint --test",
+        "docs:dev": "npm --prefix docs run docs:dev",
+        "docs:build": [
+            "npm --prefix docs ci",
+            "npm --prefix docs run docs:build"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
